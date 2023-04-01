@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "pixi-virtual-joystick": "^0.4.1"
+  }
+}
