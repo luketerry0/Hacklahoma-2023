@@ -10,11 +10,10 @@ import * as PIXI from 'pixi.js';
 import { computed, onMounted } from 'vue'
 
 // Define the props that the component should use
-/*
 const props = defineProps<{
   backgroundColor : Number,
 }>()
-*/
+
 
 // Define the function which the component should emit
 const emit = defineEmits(['canvasLogic'])
@@ -25,7 +24,7 @@ const app = new PIXI.Application({
     view: document.getElementById("pixi") as HTMLCanvasElement,
     resolution: window.devicePixelRatio || 1,
     autoDensity: true,
-    backgroundColor: 0x6495ed,
+    backgroundColor: props.backgroundColor,
     width: window.innerWidth,
     height: window.innerHeight
 });

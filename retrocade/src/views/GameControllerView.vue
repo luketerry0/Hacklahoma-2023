@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <PixiJSCanvas @canvasLogic="canvasLogic" />
+    <PixiJSCanvas @canvasLogic="canvasLogic" :backgroundColor="0x6495ed" />
   </div>
 </template>
   
