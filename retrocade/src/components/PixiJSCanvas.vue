@@ -25,8 +25,8 @@ const app = new PIXI.Application({
     resolution: window.devicePixelRatio || 1,
     autoDensity: true,
     backgroundColor: props.backgroundColor,
-    width: 350,
-    height: 600
+    width: window.innerWidth,
+    height: window.innerHeight
 });
 
 // Call the canvas logic function to animate the canvas

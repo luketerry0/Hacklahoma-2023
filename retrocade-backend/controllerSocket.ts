@@ -6,12 +6,10 @@ export default function controllerSocket(app : any){
         // when a new player is connected, send a message to that player with their number
         players.push(players.length + 1);
         ws.send(JSON.stringify({"player_num": players.length + 1}));
-        console.log(players)
 
         ws.on('message', function(msg : any) {
           // figure out what the endpoint should do
           const contents = JSON.parse(msg);
-          console.log(msg)
 
           switch(contents["TYPE"]){
           case "DISCONNECT":
