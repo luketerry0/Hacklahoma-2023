@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/websocket": "^1.0.5",
     "pixi-virtual-joystick": "^0.4.1"
   }
 }

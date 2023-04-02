@@ -20,8 +20,8 @@ const canvasLogic = (app: PIXI.Application) => {
   // create a joystick
   const INNER_RADIUS = 50;
   const OUTER_RADIUS = 150;
-  const joystickBg = PIXI.Sprite.from("http://10.204.249.206:3000/black_circle.png");
-  const joystick = PIXI.Sprite.from('http://10.204.249.206:3000/red_circle.png')
+  const joystickBg = PIXI.Sprite.from("http://"+ process.env.IPV4_ADDRESS + ":3000/black_circle.png");
+  const joystick = PIXI.Sprite.from('http://'+ process.env.IPV4_ADDRESS + ':3000/red_circle.png')
 
   // Setup the size of the joystick
   joystickBg.width = OUTER_RADIUS * 2;
@@ -59,8 +59,8 @@ const canvasLogic = (app: PIXI.Application) => {
   })
 
   // create two buttons
-  const button1 = PIXI.Sprite.from('http://10.204.249.206:3000/red_circle.png')
-  const button2 = PIXI.Sprite.from('http://10.204.249.206:3000/red_circle.png')
+  const button1 = PIXI.Sprite.from('http://'+ process.env.IPV4_ADDRESS + ':3000/red_circle.png')
+  const button2 = PIXI.Sprite.from('http://'+ process.env.IPV4_ADDRESS + ':3000/red_circle.png')
 
   // set button dimensions
   button1.width = INNER_RADIUS * 2;
@@ -100,7 +100,7 @@ const canvasLogic = (app: PIXI.Application) => {
 
 onMounted(() => {
   // connect to a websocket
-  socket.value = new WebSocket('ws://10.204.249.206:3000/');
+  socket.value = new WebSocket('ws://'+ process.env.IPV4_ADDRESS + ':3000/');
 
   // configure onMessage
   socket.value.onmessage = (message) =>{

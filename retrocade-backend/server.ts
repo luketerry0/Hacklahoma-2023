@@ -2,6 +2,7 @@ import express from 'express';
 var cors = require('cors')
 import controllerSocket from './controllerSocket';
 import gameSockets from './gameSocket';
+require('dotenv').config()
 
 const app = express();
 
@@ -16,7 +17,9 @@ app.use(express.static('assets'));
 controllerSocket(app);
 gameSockets(app);
 
-app.listen(3000, "10.204.249.206", () =>
+const address = process.env.IPV4_ADDRESS === undefined ? "localhost" : process.env.IPV4_ADDRESS;
+
+app.listen(3000, address , () =>
   console.log('API listening on port 3000'),
 );
 

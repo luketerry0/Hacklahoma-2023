@@ -1,7 +1,7 @@
 // keep track of players connected, index should correspond to player number
 var dims: any = []
-let positions : Array<Array<Number>> = [];
-export var gameSocketConnection : WebSocket[] = [];
+export var positions : Array<Array<Number>> = [];
+export var gameSocketConnection : any;
 
 import players from './controllerSocket';
 
@@ -9,7 +9,7 @@ export default function gameSockets(app : any){
     app.ws('/game', function(ws: any, req: any) {
 
         // expose websocket
-        gameSocketConnection.push(ws);
+        gameSocketConnection = ws;
 
         ws.on('message', function(msg : any) {
           // figure out what the endpoint should do
