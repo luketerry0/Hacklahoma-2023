@@ -10,6 +10,9 @@ import * as PIXI from 'pixi.js';
 import PixiJSCanvas from '../components/PixiJSCanvas.vue';
 import { onMounted, ref } from 'vue';
 
+const command = ref<string>("{}");
+const orientation = ref<number>(0);
+
 // ref to hold the websocket
 const socket = ref<WebSocket>();
 const playerNumber = ref<Number>(0);
@@ -53,12 +56,16 @@ const canvasLogic = (app: PIXI.Application) => {
       const d_x = 1.5*Math.round(Math.sin(angle)*2);
       
       // send input through the socket
-      socket.value?.send(JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': Math.round(angle*10)/10, 'dx_y' : [d_x, d_y], 'PLAYER': playerNumber.value }))
+      orientation.value = angle
+      command.value = (JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': Math.round(angle*10)/10, 'dx_y' : [d_x, d_y], 'PLAYER': playerNumber.value }))
     }
   });
 
+  setInterval(() => socket.value?.send(command.value), 5)
+
   // reset position when pointer is let go
   joystick.on('pointerup', function (e) {
+    command.value = (JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': Math.round(orientation.value*10)/10, 'dx_y' : [0, 0], 'PLAYER': playerNumber.value }))
     joystick.x = joystickBg.x;
     joystick.y = joystickBg.y;
   })

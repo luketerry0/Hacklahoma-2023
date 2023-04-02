@@ -47,7 +47,7 @@ const canvasLogic = async (app: PIXI.Application) => {
   }
 
   app.ticker.add(() => {
-    // Add functions to move characters
+    // Add functions to move ships
     for (let i = 0; i < shipCoords.value.length; i++){
       app.stage.children[i].x = shipCoords.value[i][0];
       app.stage.children[i].y = shipCoords.value[i][1];
