@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <PixiJSCanvas @canvasLogic="canvasLogic" :backgroundColor="0x6495ed" />
+    <PixiJSCanvas @canvasLogic="canvasLogic" :backgroundColor="0x0000" />
   </div>
 </template>
     
@@ -25,29 +25,27 @@ const shipCoords = ref<Array<Array<number>>>([
   [-50, -50]
 ])
 
+
 const canvasLogic = async (app: PIXI.Application) => {
-  // Listen for frame updates
+  // Create Ships with initial random locations
   for (let idNum = 0; idNum < shipCoords.value.length; ++idNum) {
-    // This creates a texture from a 'dog.png' image
-    const ship = PIXI.Sprite.from("http://"+ process.env.VUE_APP_IPV4_ADDRESS + ":3000/ship.png");
+    // Initialize a colored ship
+    const ship = PIXI.Sprite.from("http://"+ process.env.VUE_APP_IPV4_ADDRESS + ":3000/x-wing-" + (idNum + 1) + ".png");
 
     // Set image width and height
-    ship.width = 30
-    ship.height = 30
+    ship.width = 60
+    ship.height = 60
 
     // Setup the position of the ship
     ship.x = shipCoords.value[idNum][0];
     ship.y = shipCoords.value[idNum][1];
-
-    // Rotate around the center
-    ship.anchor.x = 0.5;
-    ship.anchor.y = 0.5;
 
     ship.eventMode = 'static'
 
     // Add the ship to the scene we are building
     app.stage.addChild(ship);
   }
+
   app.ticker.add(() => {
     // Add functions to move characters
     for (let i = 0; i < shipCoords.value.length; i++){
@@ -81,4 +79,15 @@ onMounted(() => {
   }
 
 })
+
+const isCollision = (object1: any, object2: any) => {
+  const bounds1 = object1.getBounds();
+  const bounds2 = object2.getBounds();
+
+  return bounds1.x < bounds2.x + bounds2.width
+        && bounds1.x + bounds1.width > bounds2.x
+        && bounds1.y < bounds2.y + bounds2.height
+        && bounds1.y + bounds1.height > bounds2.y;
+
+}
 </script>
