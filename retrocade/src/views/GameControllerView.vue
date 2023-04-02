@@ -61,7 +61,13 @@ const canvasLogic = (app: PIXI.Application) => {
     }
   });
 
-  setInterval(() => socket.value?.send(command.value), 5)
+  setInterval(() => {
+    try{
+    socket.value?.send(command.value)
+    }catch(e){
+      console.log(e)
+    }
+  }, 10)
 
   // reset position when pointer is let go
   joystick.on('pointerup', function (e) {
