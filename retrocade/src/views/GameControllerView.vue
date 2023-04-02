@@ -49,8 +49,8 @@ const canvasLogic = (app: PIXI.Application) => {
       // calculate how much the ship should actually move
       const angle = Math.atan2(adjustedCoords[1], adjustedCoords[0]);
 
-      const d_y = -3*Math.round(Math.cos(angle)*2);
-      const d_x = 3*Math.round(Math.sin(angle)*2);
+      const d_y = -1.5*Math.round(Math.cos(angle)*2);
+      const d_x = 1.5*Math.round(Math.sin(angle)*2);
       
       // send input through the socket
       socket.value?.send(JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': Math.round(angle*10)/10, 'dx_y' : [d_x, d_y], 'PLAYER': playerNumber.value }))

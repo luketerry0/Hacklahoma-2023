@@ -34,7 +34,7 @@ export default function controllerSocket(app: any) {
           // change that ships value
           positions[contents["PLAYER"] - 2][0] += contents["dx_y"][0];
           positions[contents["PLAYER"] - 2][1] += contents["dx_y"][1];
-          positions[contents["PLAYER"] - 2][2] = contents["ANGLE"]
+          positions[contents["PLAYER"] - 2][2] = contents["ANGLE"]+Math.PI
 
           // reset the ship to the other side if it is out of bounds
           const x = positions[contents["PLAYER"] - 2][0]
@@ -50,7 +50,7 @@ export default function controllerSocket(app: any) {
           }else if (y > dims[1]){
             positions[contents["PLAYER"] - 2][1] = 0;
           }
-          
+
           // send the new positions
           HOST === undefined ? console.log("wtf?") : HOST.send(JSON.stringify(positions));
           break;
