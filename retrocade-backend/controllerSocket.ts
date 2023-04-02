@@ -28,7 +28,10 @@ export default function controllerSocket(app: any) {
           players.splice(players.indexOf(contents["PLAYER"]), 1)
           break;
         case "BUTTON":
-          // code block
+          console.log(contents);
+          if (contents.BUTTON == 'A'){
+            HOST === undefined ? console.log("wtf?") : HOST.send(JSON.stringify({"LASER": true, "PLAYER" : contents.PLAYER}))
+          }
           break;
         case "JOYSTICK":
           // change that ships value
@@ -52,7 +55,7 @@ export default function controllerSocket(app: any) {
           }
 
           // send the new positions
-          HOST === undefined ? console.log("wtf?") : HOST.send(JSON.stringify(positions));
+           HOST.send(JSON.stringify(positions));
           break;
 
         case "INITIALIZE":
