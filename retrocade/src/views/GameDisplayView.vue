@@ -29,7 +29,7 @@ const shipCoords = ref<Array<Array<number>>>([
 const laserBeams = ref<PIXI.Container>(new PIXI.Container())
 
 const shipIsHit = ref<Array<boolean>>([
-  false, false, false, false, false, false, false, false, 
+  false, false, false, false, false, false, false, false,
 ]
 )
 
@@ -40,6 +40,8 @@ const canvasLogic = async (app: PIXI.Application) => {
   for (let idNum = 0; idNum < shipCoords.value.length; ++idNum) {
     // Initialize a colored ship
     const ship = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/x-wing-" + (idNum + 1) + ".png");
+    ship.anchor.x = 0.5;
+    ship.anchor.y = 1.2;
 
     // Set image width and height
     ship.width = 60
@@ -54,35 +56,35 @@ const canvasLogic = async (app: PIXI.Application) => {
     // Add the ship to the scene we are building
     app.stage.addChild(ship);
   }
-  
+
 
   app.ticker.add(() => {
     // Add functions to move ships
     for (let i = 0; i < shipCoords.value.length; i++) {
-      if (shipIsHit.value[i] == false) {
+
+      for (let j = 0; j < laserBeams.value.children.length; ++j) {
+        if (isCollision(app.stage.children[i], laserBeams.value.children[j])) {
+          laserBeams.value.removeChildAt(j)
+          //console.log("HIT")
+          shipIsHit.value[i] = true
+          app.stage.children[i].x = -50
+          app.stage.children[i].y = -50
+        }
+      }
+
+      if (!shipIsHit.value[i]) {
         app.stage.children[i].x = shipCoords.value[i][0];
         app.stage.children[i].y = shipCoords.value[i][1];
         app.stage.children[i].rotation = shipCoords.value[i][2];
       }
-    } 
-
-    /*
-    if (isCollision(app.stage.children[0], laser)) {
-      shipIsHit.value[0] = true
-      app.stage.removeChild(app.stage.children[0])
-      explosion(shipCoords.value[0][0],shipCoords.value[0][0])
     }
-    */
-    
-
-
 
     // Add the laser beams
     // move lasers forward
     app.stage.addChild(laserBeams.value as PIXI.Container);
     for (let i = 0; i < laserBeams.value.children.length; i++) {
-      laserBeams.value.children[i].x += -5 * Math.sin(laserBeams.value.children[i].rotation);
-      laserBeams.value.children[i].y += 5 * Math.cos(laserBeams.value.children[i].rotation);
+      laserBeams.value.children[i].x += -7 * Math.sin(laserBeams.value.children[i].rotation);
+      laserBeams.value.children[i].y += 7 * Math.cos(laserBeams.value.children[i].rotation);
 
       // remove the laser if it's off screen
       if (laserBeams.value.children[i].x > window.innerWidth || laserBeams.value.children[i].y > window.innerHeight) {
@@ -116,24 +118,26 @@ onMounted(() => {
       socket.value?.send(JSON.stringify({ "TYPE": "SET_HOST", "PLAYER": contents.player_num }))
     } else if (Object.keys(contents).includes('LASER')) {
       // spawn a sprite on that player
-      const coords = shipCoords.value[contents.PLAYER - 2];
+      if (!shipIsHit.value[contents.PLAYER - 2]) {
+        const coords = shipCoords.value[contents.PLAYER - 2];
 
-      const Rlaser = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/laser.png");
-      const Llaser = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/laser.png");
+        const Rlaser = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/laser.png");
+        const Llaser = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/laser.png");
 
-      Rlaser.width = 15;
-      Rlaser.height = 15;
-      Llaser.width = 15;
-      Llaser.height = 15;
-      Rlaser.x = coords[0];
-      Rlaser.y = coords[1];
-      Llaser.x = coords[0] + 40 * Math.cos(coords[2]);
-      Llaser.y = coords[1] + 40 * Math.sin(coords[2]);
+        Rlaser.width = 15;
+        Rlaser.height = 15;
+        //Llaser.width = 15;
+        //Llaser.height = 15;
+        Rlaser.x = coords[0];
+        Rlaser.y = coords[1];
+        //Llaser.x = coords[0] - 15 * Math.cos(coords[2]);
+        //Llaser.y = coords[1] - 15 * Math.sin(coords[2]);
 
-      Rlaser.rotation = coords[2];
-      Llaser.rotation = coords[2];
-      laserBeams.value.addChild(Rlaser)
-      laserBeams.value.addChild(Llaser)
+        Rlaser.rotation = coords[2];
+        //Llaser.rotation = coords[2];
+        laserBeams.value.addChild(Rlaser)
+        //laserBeams.value.addChild(Llaser)
+      }
     } else {
       shipCoords.value = contents
     }
@@ -146,10 +150,12 @@ const isCollision = (object1: any, object2: any) => {
   const bounds1 = object1.getBounds();
   const bounds2 = object2.getBounds();
 
-  return bounds1.x < bounds2.x + bounds2.width
-    && bounds1.x + bounds1.width > bounds2.x
-    && bounds1.y < bounds2.y + bounds2.height
-    && bounds1.y + bounds1.height > bounds2.y;
+  //return ((object1.x - bounds1.minX) > (object1.maxX - object1.minX) && (object1.y - bounds1.minY) > (object1.maxY - object1.minY))
+
+  return bounds1.x < bounds2.x + bounds2.width - 20
+    && bounds1.x + bounds1.width - 20 > bounds2.x
+    && bounds1.y < bounds2.y + bounds2.height - 20
+    && bounds1.y + bounds1.height - 20 > bounds2.y;
 
 }
 </script>

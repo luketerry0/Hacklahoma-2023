@@ -51,8 +51,8 @@ const canvasLogic = (app: PIXI.Application) => {
       // calculate how much the ship should actually move
       const angle = Math.atan2(adjustedCoords[1], adjustedCoords[0]);
 
-      const d_y = -3.5*Math.round(Math.cos(angle)*2);
-      const d_x = 3.5*Math.round(Math.sin(angle)*2);
+      const d_y = -1.2*Math.round(Math.cos(angle)*2);
+      const d_x = 1.2*Math.round(Math.sin(angle)*2);
       
       // send input through the socket
       orientation.value = angle
