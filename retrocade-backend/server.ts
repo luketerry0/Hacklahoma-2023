@@ -1,6 +1,7 @@
 import express from 'express';
 var cors = require('cors')
 import controllerSocket from './controllerSocket';
+import gameSockets from './gameSocket';
 
 const app = express();
 
@@ -13,6 +14,7 @@ var expressWs = require('express-ws')(app);
 app.use(express.static('assets'));
 
 controllerSocket(app);
+gameSockets(app);
 
 app.listen(3000, "10.204.249.206", () =>
   console.log('API listening on port 3000'),

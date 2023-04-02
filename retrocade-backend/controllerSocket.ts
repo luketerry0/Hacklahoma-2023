@@ -1,5 +1,6 @@
 // keep track of players connected, index should correspond to player number
-var players: any = []
+export var players: number[] = []
+import gameSocketConnection from './gameSocket';
 
 export default function controllerSocket(app : any){
     app.ws('/', function(ws: any, req: any) {
@@ -20,6 +21,7 @@ export default function controllerSocket(app : any){
             // code block
             break;
           case "JOYSTICK":
+            console.log(contents)
             break;
           default:
             // code block
