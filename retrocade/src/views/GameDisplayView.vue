@@ -68,7 +68,6 @@ const canvasLogic = async (app: PIXI.Application) => {
       // remove the laser if it's off screen
       if (laserBeams.value.children[i].x > window.innerWidth || laserBeams.value.children[i].y > window.innerHeight) {
         laserBeams.value.removeChildAt(i);
-        console.log(laserBeams.value.children.length);
       }
     }
   });
@@ -98,13 +97,22 @@ onMounted(() => {
       // spawn a sprite on that player
       const coords = shipCoords.value[contents.PLAYER - 2];
 
-      const laser = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/dog.png");
-      laser.width = 15;
-      laser.height = 15;
-      laser.x = coords[0];
-      laser.y = coords[1];
-      laser.rotation = coords[2];
-      laserBeams.value.addChild(laser)
+      const Rlaser = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/laser.png");
+      const Llaser = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/laser.png");
+
+      Rlaser.width = 15;
+      Rlaser.height = 15;
+      Llaser.width = 15;
+      Llaser.height = 15;
+      Rlaser.x = coords[0];
+      Rlaser.y = coords[1];
+      Llaser.x = coords[0] + 40 * Math.cos(coords[2]);
+      Llaser.y = coords[1] + 40 * Math.sin(coords[2]);
+
+      Rlaser.rotation = coords[2];
+      Llaser.rotation = coords[2];
+      laserBeams.value.addChild(Rlaser)
+      laserBeams.value.addChild(Llaser)
     } else {
       shipCoords.value = contents
     }
