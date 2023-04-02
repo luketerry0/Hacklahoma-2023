@@ -29,7 +29,7 @@ const canvasLogic = async (app: PIXI.Application) => {
   // Listen for frame updates
   for (let idNum = 0; idNum < shipCoords.value.length; ++idNum) {
     // This creates a texture from a 'dog.png' image
-    const ship = PIXI.Sprite.from("http://"+ process.env.IPV4_ADDRESS + ":3000/ship.png");
+    const ship = PIXI.Sprite.from("http://"+ process.env.VUE_APP_IPV4_ADDRESS + ":3000/ship.png");
 
     // Set image width and height
     ship.width = 30
@@ -61,18 +61,22 @@ onMounted(() => {
   // Create WebSocket to reveive information from backend about:
   // Ships (IDs) and their location
   // connect to a websocket
-  socket.value = new WebSocket('ws://'+ process.env.IPV4_ADDRESS + ':3000/game');
+  socket.value = new WebSocket('ws://'+ process.env.VUE_APP_IPV4_ADDRESS + ':3000');
 
 
   socket.value.onopen = () => {
     socket.value?.send(JSON.stringify({
-      "MODE": "INITIALIZE",
+      "TYPE": "INITIALIZE",
       "WINDOW_X": window.innerWidth,
-      "WINDOW_Y": window.innerHeight
+      "WINDOW_Y": window.innerHeight,
     }))
   }
   // configure onMessage
   socket.value.onmessage = (message) => {
+    const contents = JSON.parse(message.data);
+
+    console.log(Object.keys(message));
+
     shipCoords.value = JSON.parse(message.data)
   }
 
