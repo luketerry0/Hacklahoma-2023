@@ -8,7 +8,6 @@
 // defines a view for the controller used to control the games
 import * as PIXI from 'pixi.js';
 import PixiJSCanvas from '../components/PixiJSCanvas.vue';
-import { Joystick } from "pixi-virtual-joystick";
 import { onMounted, ref } from 'vue';
 
 // ref to hold the websocket
@@ -20,8 +19,8 @@ const canvasLogic = (app: PIXI.Application) => {
   // create a joystick
   const INNER_RADIUS = 50;
   const OUTER_RADIUS = 150;
-  const joystickBg = PIXI.Sprite.from("http://"+ process.env.VUE_APP_IPV4_ADDRESS + ":3000/black_circle.png");
-  const joystick = PIXI.Sprite.from('http://'+ process.env.VUE_APP_IPV4_ADDRESS + ':3000/red_circle.png')
+  const joystickBg = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/black_circle.png");
+  const joystick = PIXI.Sprite.from('http://' + process.env.VUE_APP_IPV4_ADDRESS + ':3000/red_circle.png')
 
   // Setup the size of the joystick
   joystickBg.width = OUTER_RADIUS * 2;
@@ -47,8 +46,14 @@ const canvasLogic = (app: PIXI.Application) => {
       joystick.x = e.clientX;
       joystick.y = e.clientY;
 
+      // calculate how much the ship should actually move
+      const angle = Math.atan2(adjustedCoords[1], adjustedCoords[0]);
+
+      const d_y = -3*Math.round(Math.cos(angle)*2);
+      const d_x = 3*Math.round(Math.sin(angle)*2);
+      
       // send input through the socket
-      socket.value?.send(JSON.stringify({'TYPE': 'JOYSTICK', 'COORDS' : adjustedCoords, 'PLAYER': playerNumber.value}))
+      socket.value?.send(JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': Math.round(angle*10)/10, 'dx_y' : [d_x, d_y], 'PLAYER': playerNumber.value }))
     }
   });
 
@@ -59,8 +64,8 @@ const canvasLogic = (app: PIXI.Application) => {
   })
 
   // create two buttons
-  const button1 = PIXI.Sprite.from('http://'+ process.env.VUE_APP_IPV4_ADDRESS + ':3000/red_circle.png')
-  const button2 = PIXI.Sprite.from('http://'+ process.env.VUE_APP_IPV4_ADDRESS + ':3000/red_circle.png')
+  const button1 = PIXI.Sprite.from('http://' + process.env.VUE_APP_IPV4_ADDRESS + ':3000/red_circle.png')
+  const button2 = PIXI.Sprite.from('http://' + process.env.VUE_APP_IPV4_ADDRESS + ':3000/red_circle.png')
 
   // set button dimensions
   button1.width = INNER_RADIUS * 2;
@@ -83,11 +88,11 @@ const canvasLogic = (app: PIXI.Application) => {
   button2.eventMode = "static";
   button1.on('pointerdown', function (e) {
     // send input through the socket
-    socket.value?.send(JSON.stringify({'TYPE': 'BUTTON', 'BUTTON' : 'B', 'PLAYER': playerNumber.value}))
+    socket.value?.send(JSON.stringify({ 'TYPE': 'BUTTON', 'BUTTON': 'B', 'PLAYER': playerNumber.value }))
   })
   button2.on('pointerdown', function (e) {
     // send input through the socket
-    socket.value?.send(JSON.stringify({'TYPE': 'BUTTON', 'BUTTON' : 'A', 'PLAYER': playerNumber.value}))
+    socket.value?.send(JSON.stringify({ 'TYPE': 'BUTTON', 'BUTTON': 'A', 'PLAYER': playerNumber.value }))
   })
 
 
@@ -100,16 +105,16 @@ const canvasLogic = (app: PIXI.Application) => {
 
 onMounted(() => {
   // connect to a websocket
-  socket.value = new WebSocket('ws://'+ process.env.VUE_APP_IPV4_ADDRESS + ':3000/');
+  socket.value = new WebSocket('ws://' + process.env.VUE_APP_IPV4_ADDRESS + ':3000/');
 
   // configure onMessage
-  socket.value.onmessage = (message) =>{
+  socket.value.onmessage = (message) => {
     playerNumber.value = JSON.parse(message.data)["player_num"]
     console.log(playerNumber.value)
   }
 
   socket.value.onclose = () => {
-    socket.value?.send(JSON.stringify({'TYPE': 'DISCONNECT', "PLAYER": playerNumber.value}))
+    socket.value?.send(JSON.stringify({ 'TYPE': 'DISCONNECT', "PLAYER": playerNumber.value }))
   }
 })
 </script>

@@ -53,6 +53,7 @@ const canvasLogic = async (app: PIXI.Application) => {
     for (let i = 0; i < shipCoords.value.length; i++){
       app.stage.children[i].x = shipCoords.value[i][0];
       app.stage.children[i].y = shipCoords.value[i][1];
+      app.stage.children[i].rotation = shipCoords.value[i][2];
     }
   });
 }
@@ -75,9 +76,11 @@ onMounted(() => {
   socket.value.onmessage = (message) => {
     const contents = JSON.parse(message.data);
 
-    console.log(Object.keys(message));
-
-    shipCoords.value = JSON.parse(message.data)
+    if(Object.keys(contents).includes('player_num')){
+      socket.value?.send(JSON.stringify({"TYPE": "SET_HOST", "PLAYER": contents.player_num}))
+    }else{
+      shipCoords.value = contents
+    }
   }
 
 })

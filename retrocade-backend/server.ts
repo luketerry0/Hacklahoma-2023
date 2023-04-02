@@ -1,7 +1,6 @@
 import express from 'express';
 var cors = require('cors')
 import controllerSocket from './controllerSocket';
-import gameSockets from './gameSocket';
 require('dotenv').config()
 
 const app = express();
@@ -15,7 +14,6 @@ var expressWs = require('express-ws')(app);
 app.use(express.static('assets'));
 
 controllerSocket(app);
-gameSockets(app);
 
 const address = process.env.IPV4_ADDRESS === undefined ? "localhost" : process.env.IPV4_ADDRESS;
 
