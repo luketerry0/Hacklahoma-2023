@@ -28,7 +28,6 @@ export default function controllerSocket(app: any) {
           players.splice(players.indexOf(contents["PLAYER"]), 1)
           break;
         case "BUTTON":
-          console.log(contents);
           if (contents.BUTTON == 'A'){
             HOST === undefined ? console.log("wtf?") : HOST.send(JSON.stringify({"LASER": true, "PLAYER" : contents.PLAYER}))
           }
