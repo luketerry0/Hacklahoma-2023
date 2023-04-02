@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+
+=======
 <template>
   <div class="home">
     <PixiJSCanvas @canvasLogic="canvasLogic" :backgroundColor="0x56B5BF" />
@@ -113,4 +116,5 @@ onMounted(() => {
   }
 })
 </script>
+>>>>>>> 28a037ee0a953b6fc668375e57945f8ea3532dfc
   
