@@ -13,6 +13,8 @@ import { onMounted, ref } from 'vue';
 // ref to hold the websocket
 const socket = ref<WebSocket>();
 const playerNumber = ref<Number>(0);
+const command = ref<string>("{}");
+const orientation = ref<number>(0)
 
 const canvasLogic = (app: PIXI.Application) => {
 
@@ -49,16 +51,20 @@ const canvasLogic = (app: PIXI.Application) => {
       // calculate how much the ship should actually move
       const angle = Math.atan2(adjustedCoords[1], adjustedCoords[0]);
 
-      const d_y = -1.5*Math.round(Math.cos(angle)*2);
-      const d_x = 1.5*Math.round(Math.sin(angle)*2);
+      const d_y = -3.5*Math.round(Math.cos(angle)*2);
+      const d_x = 3.5*Math.round(Math.sin(angle)*2);
       
       // send input through the socket
-      socket.value?.send(JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': Math.round(angle*10)/10, 'dx_y' : [d_x, d_y], 'PLAYER': playerNumber.value }))
+      orientation.value = angle;
+      command.value = (JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': Math.round(angle*10)/10, 'dx_y' : [d_x, d_y], 'PLAYER': playerNumber.value }))
     }
   });
 
+  setInterval(() => socket.value?.send(command.value), 10)
+
   // reset position when pointer is let go
   joystick.on('pointerup', function (e) {
+    command.value = (JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': orientation.value, 'dx_y' : [0, 0], 'PLAYER': playerNumber.value }))
     joystick.x = joystickBg.x;
     joystick.y = joystickBg.y;
   })

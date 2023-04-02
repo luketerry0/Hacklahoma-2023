@@ -31,6 +31,7 @@ export default function controllerSocket(app: any) {
           // code block
           break;
         case "JOYSTICK":
+          console.log(contents)
           // change that ships value
           positions[contents["PLAYER"] - 2][0] += contents["dx_y"][0];
           positions[contents["PLAYER"] - 2][1] += contents["dx_y"][1];

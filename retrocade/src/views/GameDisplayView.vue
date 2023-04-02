@@ -10,6 +10,7 @@ import { Options, Vue } from 'vue-class-component';
 import * as PIXI from 'pixi.js';
 import PixiJSCanvas from '../components/PixiJSCanvas.vue';
 import { nextTick, onMounted, ref } from 'vue';
+import { appendToMemberExpression } from '@babel/types';
 
 const socket = ref<WebSocket>();
 
@@ -25,6 +26,10 @@ const shipCoords = ref<Array<Array<number>>>([
   [-50, -50]
 ])
 
+const shipIsHit = ref<Array<boolean>>([
+  false, false, false, false, false, false, false, false, 
+]
+)
 
 const canvasLogic = async (app: PIXI.Application) => {
   // Create Ships with initial random locations
@@ -45,14 +50,26 @@ const canvasLogic = async (app: PIXI.Application) => {
     // Add the ship to the scene we are building
     app.stage.addChild(ship);
   }
+  
 
   app.ticker.add(() => {
     // Add functions to move characters
     for (let i = 0; i < shipCoords.value.length; i++){
-      app.stage.children[i].x = shipCoords.value[i][0];
-      app.stage.children[i].y = shipCoords.value[i][1];
-      app.stage.children[i].rotation = shipCoords.value[i][2];
+      if (shipIsHit.value[i] == false) {
+        app.stage.children[i].x = shipCoords.value[i][0];
+        app.stage.children[i].y = shipCoords.value[i][1];
+        app.stage.children[i].rotation = shipCoords.value[i][2];
+      }
+    } 
+
+    if (isCollision(app.stage.children[0], laser)) {
+      shipIsHit.value[0] = true
+      app.stage.removeChild(app.stage.children[0])
+      explosion(shipCoords.value[0][0],shipCoords.value[0][0])
     }
+    
+
+
   });
 }
 
@@ -62,7 +79,6 @@ onMounted(() => {
   // connect to a websocket
   socket.value = new WebSocket('ws://'+ process.env.VUE_APP_IPV4_ADDRESS + ':3000');
 
-
   socket.value.onopen = () => {
     socket.value?.send(JSON.stringify({
       "TYPE": "INITIALIZE",
@@ -70,19 +86,22 @@ onMounted(() => {
       "WINDOW_Y": window.innerHeight,
     }))
   }
+
+
   // configure onMessage
   socket.value.onmessage = (message) => {
     const contents = JSON.parse(message.data);
 
     if(Object.keys(contents).includes('player_num')){
       socket.value?.send(JSON.stringify({"TYPE": "SET_HOST", "PLAYER": contents.player_num}))
-    }else{
+    } else{
       shipCoords.value = contents
     }
   }
 
 })
 
+// Method that returns if there was collision between two object
 const isCollision = (object1: any, object2: any) => {
   const bounds1 = object1.getBounds();
   const bounds2 = object2.getBounds();
