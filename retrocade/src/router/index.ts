@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import LobbyView from '../views/LobbyView.vue'
 import GameControllerView from '../views/GameControllerView.vue'
 import GameDisplayView from '../views/GameDisplayView.vue'
-import AboutView from '../views/AboutView.vue'
+import AboutView from '../views/LobbyView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'home',
-    component: GameControllerView
+    name: 'Lobby',
+    component: LobbyView
   },
   {
     path: '/game',
@@ -16,8 +16,8 @@ const routes: Array<RouteRecordRaw> = [
     component: GameDisplayView
   },
   {
-    path: '/about',
-    component: AboutView
+    path: '/c',
+    component: GameControllerView
   }
 ]
 

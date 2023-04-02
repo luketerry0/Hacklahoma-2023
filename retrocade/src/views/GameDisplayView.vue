@@ -26,16 +26,20 @@ const shipCoords = ref<Array<Array<number>>>([
   [-50, -50]
 ])
 
+const laserBeams = ref<PIXI.Container>(new PIXI.Container())
+
 const shipIsHit = ref<Array<boolean>>([
   false, false, false, false, false, false, false, false, 
 ]
 )
 
 const canvasLogic = async (app: PIXI.Application) => {
+
+
   // Create Ships with initial random locations
   for (let idNum = 0; idNum < shipCoords.value.length; ++idNum) {
     // Initialize a colored ship
-    const ship = PIXI.Sprite.from("http://"+ process.env.VUE_APP_IPV4_ADDRESS + ":3000/x-wing-" + (idNum + 1) + ".png");
+    const ship = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/x-wing-" + (idNum + 1) + ".png");
 
     // Set image width and height
     ship.width = 60
@@ -53,8 +57,8 @@ const canvasLogic = async (app: PIXI.Application) => {
   
 
   app.ticker.add(() => {
-    // Add functions to move characters
-    for (let i = 0; i < shipCoords.value.length; i++){
+    // Add functions to move ships
+    for (let i = 0; i < shipCoords.value.length; i++) {
       if (shipIsHit.value[i] == false) {
         app.stage.children[i].x = shipCoords.value[i][0];
         app.stage.children[i].y = shipCoords.value[i][1];
@@ -62,14 +66,30 @@ const canvasLogic = async (app: PIXI.Application) => {
       }
     } 
 
+    /*
     if (isCollision(app.stage.children[0], laser)) {
       shipIsHit.value[0] = true
       app.stage.removeChild(app.stage.children[0])
       explosion(shipCoords.value[0][0],shipCoords.value[0][0])
     }
+    */
     
 
 
+
+    // Add the laser beams
+    // move lasers forward
+    app.stage.addChild(laserBeams.value as PIXI.Container);
+    for (let i = 0; i < laserBeams.value.children.length; i++) {
+      laserBeams.value.children[i].x += -5 * Math.sin(laserBeams.value.children[i].rotation);
+      laserBeams.value.children[i].y += 5 * Math.cos(laserBeams.value.children[i].rotation);
+
+      // remove the laser if it's off screen
+      if (laserBeams.value.children[i].x > window.innerWidth || laserBeams.value.children[i].y > window.innerHeight) {
+        laserBeams.value.removeChildAt(i);
+        console.log(laserBeams.value.children.length);
+      }
+    }
   });
 }
 
@@ -77,7 +97,8 @@ onMounted(() => {
   // Create WebSocket to reveive information from backend about:
   // Ships (IDs) and their location
   // connect to a websocket
-  socket.value = new WebSocket('ws://'+ process.env.VUE_APP_IPV4_ADDRESS + ':3000');
+  socket.value = new WebSocket('ws://' + process.env.VUE_APP_IPV4_ADDRESS + ':3000');
+
 
   socket.value.onopen = () => {
     socket.value?.send(JSON.stringify({
@@ -92,9 +113,20 @@ onMounted(() => {
   socket.value.onmessage = (message) => {
     const contents = JSON.parse(message.data);
 
-    if(Object.keys(contents).includes('player_num')){
-      socket.value?.send(JSON.stringify({"TYPE": "SET_HOST", "PLAYER": contents.player_num}))
-    } else{
+    if (Object.keys(contents).includes('player_num')) {
+      socket.value?.send(JSON.stringify({ "TYPE": "SET_HOST", "PLAYER": contents.player_num }))
+    } else if (Object.keys(contents).includes('LASER')) {
+      // spawn a sprite on that player
+      const coords = shipCoords.value[contents.PLAYER - 2];
+
+      const laser = PIXI.Sprite.from("http://" + process.env.VUE_APP_IPV4_ADDRESS + ":3000/dog.png");
+      laser.width = 15;
+      laser.height = 15;
+      laser.x = coords[0];
+      laser.y = coords[1];
+      laser.rotation = coords[2];
+      laserBeams.value.addChild(laser)
+    } else {
       shipCoords.value = contents
     }
   }
@@ -107,9 +139,9 @@ const isCollision = (object1: any, object2: any) => {
   const bounds2 = object2.getBounds();
 
   return bounds1.x < bounds2.x + bounds2.width
-        && bounds1.x + bounds1.width > bounds2.x
-        && bounds1.y < bounds2.y + bounds2.height
-        && bounds1.y + bounds1.height > bounds2.y;
+    && bounds1.x + bounds1.width > bounds2.x
+    && bounds1.y < bounds2.y + bounds2.height
+    && bounds1.y + bounds1.height > bounds2.y;
 
 }
 </script>

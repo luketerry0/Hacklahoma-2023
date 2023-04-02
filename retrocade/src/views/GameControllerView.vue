@@ -55,16 +55,22 @@ const canvasLogic = (app: PIXI.Application) => {
       const d_x = 3.5*Math.round(Math.sin(angle)*2);
       
       // send input through the socket
-      orientation.value = angle;
+      orientation.value = angle
       command.value = (JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': Math.round(angle*10)/10, 'dx_y' : [d_x, d_y], 'PLAYER': playerNumber.value }))
     }
   });
 
-  setInterval(() => socket.value?.send(command.value), 10)
+  setInterval(() => {
+    try{
+    socket.value?.send(command.value)
+    }catch(e){
+      console.log(e)
+    }
+  }, 10)
 
   // reset position when pointer is let go
   joystick.on('pointerup', function (e) {
-    command.value = (JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': orientation.value, 'dx_y' : [0, 0], 'PLAYER': playerNumber.value }))
+    command.value = (JSON.stringify({ 'TYPE': 'JOYSTICK', 'ANGLE': Math.round(orientation.value*10)/10, 'dx_y' : [0, 0], 'PLAYER': playerNumber.value }))
     joystick.x = joystickBg.x;
     joystick.y = joystickBg.y;
   })
